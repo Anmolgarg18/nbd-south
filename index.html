@@ -1,0 +1,1129 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>District Manager Competency Report</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700;900&amp;display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+
+  <style>
+    :root { 
+      --primary: #0063c3 ; 
+      --secondary: #0063c3;
+    }
+    body { font-family: 'Roboto', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', 'Helvetica Neue', Arial; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    .competency-item { cursor: pointer; transition: all 0.3s ease; }
+    .competency-item:hover { background-color: #f3f4f6; }
+    .competency-expanded { background-color: #eef2ff; }
+    .sub-competency { display: none; }
+    .sub-competency.show { display: block; }
+
+    /* Subtle orange utility tints for consistent branding */
+    .bg-primary-08 { background-color: #d9e8ff }
+    .bg-primary-12 { background-color: #b3d1ff  }
+    .bg-primary-16 { background-color: rgba(236,114,0,0.16); }
+    .text-primary { color: var(--primary); }
+    .border-primary { border-color: var(--primary); }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+  <script src="/_sdk/element_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="bg-gray-50">
+ <header class="w-full h-[60px] bg-white flex items-center px-6 shadow-sm">
+  <img src="./Assets/logo.png" alt="Logo" class="h-10 w-auto">
+</header>
+
+  <div class="max-w-7xl mx-auto px-12 py-6"><!-- Filter Controls -->
+   <div class="bg-white rounded-lg shadow-sm mb-6 p-6">
+    <div class="flex items-center justify-between">
+     <div>
+      <h1 class="text-2xl font-bold text-gray-900" id = "reporttitle">NBD 报告</h1>
+      
+     </div>
+     <div class="flex items-center space-x-4"><label class="text-sm font-medium text-gray-700">选择区域经理:</label> <select id="dmFilter" onchange="filterByDM()" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary bg-white min-w-48"> <option value="team">选择区域经理</option><option value="dm1">Yujuan Guan （管玉娟）</option></option><option value="dm1">Yijia Xie （谢依佳）</option></option></option><option value="dm1">Qian Xiong （熊谦）</option></option></option></option><option value="dm1">Wenming Cao</option></option><option value="dm1">Wenping Xu （许文平）</option></select>
+     </div>
+    </div>
+   </div><!-- Tab Navigation -->
+   <div class="bg-white rounded-lg shadow-sm mb-6">
+    <div class="border-b border-gray-200">
+     <nav class="flex space-x-8 px-6"><button onclick="showTab('overall', this)" class="tab-btn py-4 px-2 border-b-2" style="border-color: var(--primary); color: var(--primary); font-weight: 500;"> 总体报告 </button> <button onclick="showTab('detailed', this)" class="tab-btn py-4 px-2 border-b-2 border-transparent text-gray-500 hover:text-gray-700" style="font-weight: 500;"> 详细报告 </button>
+     </nav>
+    </div>
+   </div><!-- Overall Report Tab -->
+   <div id="overall" class="tab-content active">
+    <div class="grid grid-cols-1 gap-6 mb-6">
+     <div class="bg-white rounded-xl shadow-lg border border-gray-100 p-8">
+      <div class="mb-8">
+       <h2 class="text-2xl font-bold text-gray-900 mb-2" id="overviewTitle">团队能力概览</h2>
+       <p class="text-gray-600" id="overviewDescription">以下评分展示了基于模拟评估和360度反馈，对安进中国地区经理能力模型的团队整体表现。团队在业务敏锐度和团队领导力方面表现突出，而在绩效辅导和 打造最佳团队方面仍有进一步提升空间。</p>
+      </div><!-- Legend -->
+      <div class="bg-gray-50 rounded-lg p-4 mb-8">
+       <div class="flex justify-start space-x-8 text-sm">
+        <div class="flex items-center space-x-2">
+         <div class="w-4 h-4 rounded-full shadow-sm" style="background-color: #66caff;"></div><span class="text-gray-700 font-medium" id="legendone">您的团队评分</span>
+        </div>
+        <div class="flex items-center space-x-2">
+         <div class="w-4 h-4 rounded-full shadow-sm" style="background-color: #0063c3  ;"></div><span class="text-gray-700 font-medium">安进平均分</span>
+        </div>
+       </div>
+      </div>
+      <div class="space-y-8"><!-- 团队领导力 -->
+       <div class="competency-bar bg-white border border-gray-100 rounded-lg p-6 shadow-sm">
+        <div class="flex justify-between items-center mb-4">
+         <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-lg bg-primary-08 flex items-center justify-center">
+           <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+           </svg>
+          </div>
+          <div>
+           <h3 class="text-lg font-semibold text-gray-900">团队领导力</h3>
+           
+          </div>
+         </div>
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4"><!-- Progress Bar (sleek, lower height) -->
+         <div class="relative">
+          <div class="flex justify-between text-xs text-gray-500 mb-1"><span>0</span><span>1</span><span>2</span><span>3</span>
+          </div>
+          <div class="relative h-8 bg-gray-200 rounded-lg overflow-hidden">
+           <div class="absolute inset-0 flex">
+            <div class="w-1/3 border-r border-gray-300"></div>
+            <div class="w-1/3 border-r border-gray-300"></div>
+            <div class="w-1/3"></div>
+           </div>
+           <div class="absolute top-0 left-0 h-full rounded-lg" style="width:55%; background-color: #d9e8ff;"></div>
+           <div class="absolute top-1/2 -translate-y-1/2 w-7 h-7 rounded-full border-4 border-white shadow flex items-center justify-center" style="left: calc(54% - 14px); background-color: #66caff;"><span class="text-[10px] font-extrabold text-white">1.5</span>
+           </div>
+           <div class="absolute top-1/2 -translate-y-1/2 w-7 h-7 rounded-full border-4 border-white shadow flex items-center justify-center" style="left: calc(57%); background-color: var(--primary);"><span class="text-[10px] font-extrabold text-white">1.6</span>
+           </div>
+          </div>
+          <div class="flex mt-2">
+           <div class="w-1/3 text-center text-xs text-gray-600 font-medium">
+            学习者
+           </div>
+           <div class="w-1/3 text-center text-xs text-gray-600 font-medium">
+            应用者
+           </div>
+           <div class="w-1/3 text-center text-xs text-gray-600 font-medium">
+            榜样
+           </div>
+          </div>
+         </div><!--评分明细 Chart -->
+         <div class="bg-gray-50 p-3 rounded-lg">
+          <div class="text-xs text-gray-600 mb-2 text-center">
+          评分明细
+          </div>
+          <div class="h-[80%]">
+           <canvas id="teamLeadershipOverviewChart"></canvas>
+          </div>
+          
+         </div>
+        </div>
+       </div><!-- 绩效辅导 -->
+       <div class="competency-bar bg-white border border-gray-100 rounded-lg p-6 shadow-sm">
+        <div class="flex justify-between items-center mb-4">
+         <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-lg bg-primary-08 flex items-center justify-center">
+           <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+           </svg>
+          </div>
+          <div>
+           <h3 class="text-lg font-semibold text-gray-900">绩效辅导</h3>
+           
+          </div>
+         </div>
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+         <div class="relative">
+          <div class="flex justify-between text-xs text-gray-500 mb-1"><span>0</span><span>1</span><span>2</span><span>3</span>
+          </div>
+          <div class="relative h-8 bg-gray-200 rounded-lg overflow-hidden">
+           <div class="absolute inset-0 flex">
+            <div class="w-1/3 border-r border-gray-300"></div>
+            <div class="w-1/3 border-r border-gray-300"></div>
+            <div class="w-1/3"></div>
+           </div>
+           <div class="absolute top-0 left-0 h-full rounded-lg" style="width:37%; background-color: #d9e8ff;"></div>
+           <div class="absolute top-1/2 -translate-y-1/2 w-7 h-7 rounded-full border-4 border-white shadow flex items-center justify-center" style="left: calc(37% - 14px); background-color: #66caff;"><span class="text-[10px] font-extrabold text-white">1.2</span>
+           </div>
+           <div class="absolute top-1/2 -translate-y-1/2 w-7 h-7 rounded-full border-4 border-white shadow flex items-center justify-center" style="left: calc(39% + 14px); background-color: var(--primary);"><span class="text-[10px] font-extrabold text-white">1.3</span>
+           </div>
+          </div>
+          <div class="flex mt-2">
+           <div class="w-1/3 text-center text-xs text-gray-600 font-medium">
+            学习者
+           </div>
+           <div class="w-1/3 text-center text-xs text-gray-600 font-medium">
+            应用者
+           </div>
+           <div class="w-1/3 text-center text-xs text-gray-600 font-medium">
+            榜样
+           </div>
+          </div>
+         </div>
+         <div class="bg-gray-50 p-3 rounded-lg">
+          <div class="text-xs text-gray-600 mb-2 text-center">
+          评分明细
+          </div>
+          <div class="h-[80%]">
+           <canvas id="coachingOverviewChart"></canvas>
+          </div>
+         
+         </div>
+        </div>
+       </div><!-- 业务敏锐度 -->
+       <div class="competency-bar bg-white border border-gray-100 rounded-lg p-6 shadow-sm">
+        <div class="flex justify-between items-center mb-4">
+         <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-lg bg-primary-08 flex items-center justify-center">
+           <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+           </svg>
+          </div>
+          <div>
+           <h3 class="text-lg font-semibold text-gray-900">业务敏锐度</h3>
+           
+          </div>
+         </div>
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+         <div class="relative">
+          <div class="flex justify-between text-xs text-gray-500 mb-1"><span>0</span><span>1</span><span>2</span><span>3</span>
+          </div>
+          <div class="relative h-8 bg-gray-200 rounded-lg overflow-hidden">
+           <div class="absolute inset-0 flex">
+            <div class="w-1/3 border-r border-gray-300"></div>
+            <div class="w-1/3 border-r border-gray-300"></div>
+            <div class="w-1/3"></div>
+           </div>
+           <div class="absolute top-0 left-0 h-full rounded-lg" style="width:62%; background-color: #d9e8ff;"></div>
+           <div class="absolute top-1/2 -translate-y-1/2 w-7 h-7 rounded-full border-4 border-white shadow flex items-center justify-center" style="left: calc(62% - 14px); background-color: #66caff;"><span class="text-[10px] font-extrabold text-white">1.7</span>
+           </div>
+           <div class="absolute top-1/2 -translate-y-1/2 w-7 h-7 rounded-full border-4 border-white shadow flex items-center justify-center" style="left: calc(58% - 18px); background-color: var(--primary);"><span class="text-[10px] font-extrabold text-white">1.5</span>
+           </div>
+          </div>
+          <div class="flex mt-2">
+           <div class="w-1/3 text-center text-xs text-gray-600 font-medium">
+            学习者
+           </div>
+           <div class="w-1/3 text-center text-xs text-gray-600 font-medium">
+            应用者
+           </div>
+           <div class="w-1/3 text-center text-xs text-gray-600 font-medium">
+            榜样
+           </div>
+          </div>
+         </div>
+         <div class="bg-gray-50 p-3 rounded-lg">
+          <div class="text-xs text-gray-600 mb-2 text-center">
+          评分明细
+          </div>
+          <div class="h-[80%]">
+           <canvas id="businessOverviewChart"></canvas>
+          </div>
+         </div>
+        </div>
+       </div><!-- Building Best Teams -->
+       <div class="competency-bar bg-white border border-gray-100 rounded-lg p-6 shadow-sm">
+        <div class="flex justify-between items-center mb-4">
+         <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-lg bg-primary-08 flex items-center justify-center">
+           <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m3 5.197V9a3 3 0 00-3-3M9 21v-4a2 2 0 012-2h2a2 2 0 012 2v4" />
+           </svg>
+          </div>
+          <div>
+           <h3 class="text-lg font-semibold text-gray-900">打造最佳团队</h3>
+           
+          </div>
+         </div>
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+         <div class="relative">
+          <div class="flex justify-between text-xs text-gray-500 mb-1"><span>0</span><span>1</span><span>2</span><span>3</span>
+          </div>
+          <div class="relative h-8 bg-gray-200 rounded-lg overflow-hidden">
+           <div class="absolute inset-0 flex">
+            <div class="w-1/3 border-r border-gray-300"></div>
+            <div class="w-1/3 border-r border-gray-300"></div>
+            <div class="w-1/3"></div>
+           </div>
+           <div class="absolute top-0 left-0 h-full rounded-lg" style="width:45%; background-color: #d9e8ff;"></div>
+           <div class="absolute top-1/2 -translate-y-1/2 w-7 h-7 rounded-full border-4 border-white shadow flex items-center justify-center" style="left: calc(45% - 14px); background-color: #66caff;"><span class="text-[10px] font-extrabold text-white">1.4</span>
+           </div>
+           <div class="absolute top-1/2 -translate-y-1/2 w-7 h-7 rounded-full border-4 border-white shadow flex items-center justify-center" style="left: calc(50% + 14px); background-color: var(--primary);"><span class="text-[10px] font-extrabold text-white">1.5</span>
+           </div>
+          </div>
+          <div class="flex mt-2">
+           <div class="w-1/3 text-center text-xs text-gray-600 font-medium">
+            学习者
+           </div>
+           <div class="w-1/3 text-center text-xs text-gray-600 font-medium">
+            应用者
+           </div>
+           <div class="w-1/3 text-center text-xs text-gray-600 font-medium">
+            榜样
+           </div>
+          </div>
+         </div>
+         <div class="bg-gray-50 p-3 rounded-lg">
+          <div class="text-xs text-gray-600 mb-2 text-center">
+          评分明细
+          </div>
+          <div class="h-[80%]">
+           <canvas id="teamsOverviewChart"></canvas>
+          </div>
+          
+         </div>
+        </div>
+       </div>
+      </div>
+     </div><!-- Competency Feedback Summary -->
+     <div class="bg-white rounded-lg shadow-sm p-6" id="feedbackSection">
+      <h2 class="text-xl font-semibold text-gray-900 mb-6" id="feedbackTitle">团队能力反馈汇总</h2>
+      <div class="space-y-6" id="feedbackContent"><!-- Team Leadership Feedback -->
+       <div class="border-l-4 pl-4" style="border-color: var(--primary);">
+        <h3 class="font-semibold text-primary mb-2">团队领导力</h3>
+        <p class="text-sm text-gray-700 mb-2"><strong>DM 团队整体营造出一种稳定、亲和且可依赖的工作氛围，成员在提出问题或寻求支持时感到安心与自在。日常运营安排清晰有序，使团队在高压时期也能保持工作节奏。DM 对合规与执行的重视为团队提供了安全感，也让区域管理更具一致性。同时，许多 DM 在遇到困难情境时愿意亲自承担责任、主动协助团队，进一步加强了团队的信任感与凝聚力。。</p>
+        <p class="text-sm text-gray-700"><strong>尽管团队氛围积极，但部分 DM 在不同成员或不同情境下仍沿用相似的领导方式，导致激励与指导的效果不够差异化。管理重心更多集中在任务推进上，而较少帮助团队理解目标背后的深层逻辑或参与共同解决问题，使自主性与前瞻性有所受限。随着团队能力层次差异逐渐显现，更需要通过因材施教、引导更广泛的参与，以及开展更开放的讨论，来强化团队的责任感并提升整体的绩效动能。</p>
+       </div><!-- 绩效辅导 Feedback -->
+       <div class="border-l-4 pl-4" style="border-color: var(--primary);">
+        <h3 class="font-semibold text-primary mb-2">绩效辅导</h3>
+        <p class="text-sm text-gray-700 mb-2"><strong>团队优势 :</strong>DM 许多 DM 在日常工作中表现出稳定、持续的指导，能够在代表面对困难客户或复杂情境时迅速提供支持。他们能清晰指出重点、帮助识别执行障碍，并给出可行的建议以确保关键活动顺利推进。团队成员普遍认为，DM 在关键时刻能够及时介入、给予肯定，使人更有信心。同时，不少 DM 愿意花精力强化基础技能，并结合真实案例进行示范，帮助新人更快建立行动路径与信心。</p>
+        <p class="text-sm text-gray-700"><strong>团队发展领域 :</strong>虽然日常指导已有一定频率，但许多 DM 的辅导方式仍偏向直接给出解决方案，而不是引导团队建立更深入的思考模式或更成熟的问题解决能力。辅导内容往往集中在修正执行上，而较少提升能推动独立成功的核心能力。同时，辅导缺乏固定节奏，多在问题出现后才展开，导致发展更多呈现“补救式”而非“成长式”。在提问技巧、情境分析引导以及以成长行为为核心的辅导方面进一步加强，将有助于提升团队能力，使绩效提升更加可持续。</p>
+       </div><!-- Business Acumen Feedback -->
+       <div class="border-l-4 pl-4" style="border-color: var(--primary);">
+        <h3 class="font-semibold text-primary mb-2">业务敏锐度</h3>
+        <p class="text-sm text-gray-700 mb-2"><strong>团队优势 :</strong>许多 DM 对业务环境有较扎实的理解，能够将整体业务重点有效转化为团队的具体执行方向。他们通常能明确指出业务发力点，确保关键活动与品牌方向保持一致。DM 在解读绩效趋势、保持重点医院的业务可见性以及清晰传递业务期望方面表现稳定，有助于团队始终围绕核心目标行动。同时，DM 具备较强的运营思维，在跟进节奏、绩效透明度和日常执行规范上形成了较一致的管理方式，为团队提供了可靠的业务运营框架。</p>
+        <p class="text-sm text-gray-700"><strong>团队发展领域 :</strong>虽然整体具备一定的商业思维基础，但许多 DM 在制定计划时的分析深度仍有提升空间。部分行动步骤仍停留在泛化的活动层面，对为何聚焦某些客户、行为或渠道的战略理由阐述不足。优先级的区分也不够明确，容易导致资源平均分配，而未能突出最具价值的增长机会。此外，策略调整往往在结果出现变化后才进行，而不是基于市场早期信号提前预判。若能进一步强化洞察生成能力——将行动与清晰的战略逻辑相连接、以数据细化优先级、并根据领先指标及时调整方向——将有助于 DM 从“做任务”转向“以洞察驱动增长”的商业决策方式。</p>
+       </div><!-- Building Best Teams Feedback -->
+       <div class="border-l-4 pl-4" style="border-color: var(--primary);">
+        <h3 class="font-semibold text-primary mb-2">打造最佳团队</h3>
+        <p class="text-sm text-gray-700 mb-2"><strong>DM 团队普遍致力于营造支持性强且稳定的团队氛围，让成员在遇到问题时能够主动交流与寻求帮助。他们通过持续的沟通机制保持团队对齐，减少了繁忙时期的压力与信息落差。许多 DM 在团队面临挑战时也会主动协调资源、提供方向支持，帮助成员明确下一步行动，传递出可靠感和共同奋斗的氛围。这些稳定性、可获得性和团队导向的行为为团队凝聚力和关键时刻的协作执行奠定了坚实基础。</p>
+        <p class="text-sm text-gray-700"><strong>虽然团队氛围积极，但许多 DM 仍更多依赖整体性的支持方式，而较少主动塑造以绩效为导向的团队文化。团队成员之间的能力差异并未被充分识别和应对，导致强绩效者承担更多任务，而需要更多帮助的成员未能获得足够的针对性培养。团队讨论往往停留在任务更新，而未能充分激发多元观点、挑战既有思维或共同处理更复杂的问题。通过构建更系统的能力评估机制、差异化发展路径与同侪学习方式，并在讨论中促进更广泛的参与，团队将能够从“保持和谐”迈向“持续高绩效”的团队文化。</p>
+       </div>
+      </div>
+     </div>
+    </div><!-- Strengths and Development Opportunities -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+     <div class="bg-white rounded-lg shadow-sm p-6">
+      <h3 class="text-lg font-semibold text-primary mb-4">🎯 三大优势</br><span class="text-[13px] font-normal ps-5">根据各细分能力的评分（最高）及相互一致性确定</span></h3>
+      <div class="space-y-3">
+       <div class="p-3 bg-primary-08 rounded-lg">
+        <div class="font-medium text-gray-900">
+        业务敏锐度
+        </div>
+        <div class="text-sm text-gray-600">
+         展示对业务和品牌优先事项的深入了解
+        </div>
+       </div>
+       <div class="p-3 bg-primary-08 rounded-lg">
+        <div class="font-medium text-gray-900">
+        打造最佳团队
+        </div>
+        <div class="text-sm text-gray-600">
+        促进团队参与和协作
+        </div>
+       </div>
+       <div class="p-3 bg-primary-08 rounded-lg">
+        <div class="font-medium text-gray-900">
+        团队领导力
+        </div>
+        <div class="text-sm text-gray-600">
+         领导并展示道德责任与诚信
+        </div>
+       </div>
+      </div>
+     </div>
+     <div class="bg-white rounded-lg shadow-sm p-6">
+      <h3 class="text-lg font-semibold text-primary mb-4">📈 三大发展机会</br><span class="text-[13px] font-normal ps-5"> 根据各细分能力的评分（最低）及相互一致性确定</span></h3>
+      <div class="space-y-3">
+       <div class="p-3 bg-primary-08 rounded-lg">
+        <div class="font-medium text-gray-900">
+        绩效辅导
+        </div>
+        <div class="text-sm text-gray-600">
+        优先考虑并执行辅导
+        </div>
+       </div>
+       <div class="p-3 bg-primary-08 rounded-lg">
+        <div class="font-medium text-gray-900">
+        业务敏锐度
+        </div>
+        <div class="text-sm text-gray-600">
+        制定并执行与品牌战略一致的可操作战略计划
+        </div>
+       </div>
+       <div class="p-3 bg-primary-08 rounded-lg">
+        <div class="font-medium text-gray-900">
+        绩效辅导
+        </div>
+        <div class="text-sm text-gray-600">
+        树立卓越榜样，确保责任落实
+        </div>
+       </div>
+      </div>
+     </div>
+    </div>
+   </div><!-- Detailed Report Tab -->
+   <div id="detailed" class="tab-content">
+    <div class="bg-white rounded-lg shadow-sm p-6">
+     <h2 class="text-xl font-semibold text-gray-900 mb-6">详细能力分析</h2>
+     <div class="space-y-2"><!-- Team Leadership -->
+      <div class="border border-gray-200 rounded-lg">
+       <div class="competency-item p-4 flex justify-between items-center" onclick="toggleCompetency('team-leadership')">
+        <div class="flex items-center space-x-3">
+         <div class="w-8 h-8 rounded-lg bg-primary-08 flex items-center justify-center">
+          <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+          </svg>
+         </div>
+         <div>
+          <h3 class="font-semibold text-gray-900">团队领导力</h3>
+          
+         </div>
+        </div>
+        <svg class="w-5 h-5 text-gray-400 transform transition-transform" id="team-leadership-arrow" viewbox="0 0 24 24" fill="none"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+        </svg>
+       </div>
+       <div id="team-leadership-content" class="sub-competency border-t border-gray-200">
+        <div class="p-4 space-y-4">
+         <div class="mb-4 p-4 bg-primary-08 rounded-lg">
+          <h4 class="font-medium text-primary mb-2">定义</h4>
+          <p class="text-sm text-gray-700">通过清晰的愿景、有效的沟通和适应性强的领导风格，激励和鼓舞团队，培养对卓越和责任的承诺，确保与组织目标和价值观保持一致。</p>
+         </div>
+         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="bg-gray-50 p-4 rounded-lg">
+           <h4 class="font-medium text-gray-900 mb-3">建立高绩效和卓越运营的文化</h4>
+           <div class="h-24">
+            <canvas id="cultureChart"></canvas>
+           </div>
+           
+          </div>
+          <div class="bg-gray-50 p-4 rounded-lg">
+           <h4 class="font-medium text-gray-900 mb-3">通过他人交付成果</h4>
+           <div class="h-24">
+            <canvas id="resultsChart"></canvas>
+           </div>
+           
+          </div>
+          <div class="bg-gray-50 p-4 rounded-lg">
+           <h4 class="font-medium text-gray-900 mb-3">调整领导方式以吸引、激励和鼓舞</h4>
+           <div class="h-24">
+            <canvas id="adaptChart"></canvas>
+           </div>
+           
+          </div>
+          <div class="bg-gray-50 p-4 rounded-lg">
+           <h4 class="font-medium text-gray-900 mb-3">领导并展示道德责任与诚信</h4>
+           <div class="h-24">
+            <canvas id="ethicsChart"></canvas>
+           </div>
+           
+          </div>
+         </div>
+         <div class="bg-primary-08 p-4 rounded-lg">
+          <h5 class="font-medium text-primary mb-2">定性评价 :</h5>
+          <p class="text-sm text-gray-700">"DM 团队整体能够营造平和、尊重的氛围，让成员在表达观点和提出困难时感到自在，从而为日常运营提供稳定基础。然而，许多 DM 在面对挑战时仍习惯亲自介入、直接解决，而不是引导团队思考替代方案或形成自己的判断。这种做法在短期内能解决问题，但在长期会限制团队独立分析与决策能力的培养。
+
+在设定方向方面，DM 对任务要求与时间节点说明清晰，但背后的业务逻辑并未始终被充分解释，导致部分成员将工作视为分散的动作，而不是整体战略的一部分。同时，大多数 DM 在不同能力层级之间采用相似的支持方式，使得高潜力成员缺少进一步突破的空间，而发展需求较高的成员也无法获得更具针对性的辅导。
+
+DM 也展现出较强的责任感，但任务分配往往受即时需求驱动，而较少基于长期人才发展的考虑，使团队在关键时刻仍依赖管理者作出判断。领导风格方面，DM 多数保持稳定一致的沟通方式，对不同性格或不确定场景的适应性有限。若能强化有意图的授权、提升团队参与度，并在教练式、挑战式与赋能式领导之间灵活切换，将更有助于打造更具自主性、韧性与持续驱动力的团队。"
+ </p>
+         </div>
+        </div>
+       </div>
+      </div><!-- 绩效辅导 -->
+      <div class="border border-gray-200 rounded-lg">
+       <div class="competency-item p-4 flex justify-between items-center" onclick="toggleCompetency('coaching')">
+        <div class="flex items-center space-x-3">
+         <div class="w-8 h-8 rounded-lg bg-primary-08 flex items-center justify-center">
+          <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+          </svg>
+         </div>
+         <div>
+          <h3 class="font-semibold text-gray-900">绩效辅导</h3>
+          
+         </div>
+        </div>
+        <svg class="w-5 h-5 text-gray-400 transform transition-transform" id="coaching-arrow" viewbox="0 0 24 24" fill="none"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+        </svg>
+       </div>
+       <div id="coaching-content" class="sub-competency border-t border-gray-200">
+        <div class="p-4 space-y-4">
+         <div class="mb-4 p-4 bg-primary-08 rounded-lg">
+          <h4 class="font-medium text-primary mb-2">定义</h4>
+          <p class="text-sm text-gray-700">为团队成员提供持续的、量身定制的辅导和反馈，专注于发展他们的优势并解决改进领域。利用绩效指标和安进辅导资源指导工作，并培养持续学习和发展的文化。</p>
+         </div>
+         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="bg-gray-50 p-4 rounded-lg">
+           <h4 class="font-medium text-gray-900 mb-3">优先考虑并执行辅导</h4>
+           <div class="h-24">
+            <canvas id="prioritizeChart"></canvas>
+           </div>
+           
+          </div>
+          <div class="bg-gray-50 p-4 rounded-lg">
+           <h4 class="font-medium text-gray-900 mb-3">培养持续学习和成长</h4>
+           <div class="h-24">
+            <canvas id="learningChart"></canvas>
+           </div>
+           
+          </div>
+          <div class="bg-gray-50 p-4 rounded-lg">
+           <h4 class="font-medium text-gray-900 mb-3">树立卓越榜样，确保责任落实</h4>
+           <div class="h-24">
+            <canvas id="excellenceChart"></canvas>
+           </div>
+           
+          </div>
+         </div>
+         <div class="bg-primary-08 p-4 rounded-lg">
+          <h5 class="font-medium text-primary mb-2">定性评价 :</h5>
+          <p class="text-sm text-gray-700">"许多 DM 对团队成长抱有真诚的投入，但这种意愿尚未形成稳定、规律的辅导节奏。辅导往往在出现问题或代表已表现吃力时才展开，而不是作为一种提前建立能力、预防问题的日常机制。由此导致的对话更像是快速给建议，而不是基于个人差异、能力成熟度或发展需求的深度辅导，难以持续推动技能提升。
+
+在日常管理中，DM 会给予积极鼓励和实用指导，但对长期能力建设的关注相对不够系统。发展计划虽然会被制定，但后续的跟进、进度检查和反思性对话并不稳定。很多交流更多放在纠正近期执行偏差，而较少帮助团队在临床沟通、分析能力或应对复杂客户情境等核心技能上实现突破，使得团队整体能力提升不够均衡。
+
+此外，DM 的个人执行力虽强，但将这种标准转化为团队层面的可复制机制仍存在不足。预期虽然清晰，但对承诺事项的跟踪、质量标准的强化以及辅导后的落地监控缺乏一致性。在辅导场景中，不少 DM 更倾向直接给答案，而不是引导团队自行推理、形成独立判断。若能强化责任机制、记录发展行动，并借助真实案例巩固标准，将有助于让辅导成为持续提升团队能力的系统性驱动力，而不仅依赖 DM 的个人经验。
+"
+ </p>
+         </div>
+        </div>
+       </div>
+      </div><!-- Business Acumen -->
+      <div class="border border-gray-200 rounded-lg">
+       <div class="competency-item p-4 flex justify-between items-center" onclick="toggleCompetency('business')">
+        <div class="flex items-center space-x-3">
+         <div class="w-8 h-8 rounded-lg bg-primary-08 flex items-center justify-center">
+          <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+          </svg>
+         </div>
+         <div>
+          <h3 class="font-semibold text-gray-900">业务敏锐度</h3>
+          
+         </div>
+        </div>
+        <svg class="w-5 h-5 text-gray-400 transform transition-transform" id="business-arrow" viewbox="0 0 24 24" fill="none"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+        </svg>
+       </div>
+       <div id="business-content" class="sub-competency border-t border-gray-200">
+        <div class="p-4 space-y-4">
+         <div class="mb-4 p-4 bg-primary-08 rounded-lg">
+          <h4 class="font-medium text-primary mb-2">定义</h4>
+          <p class="text-sm text-gray-700">展示对业务、数据和品牌优先事项的深刻理解，有效制定和执行战略计划。保持敏捷性并根据需要调整策略，以推动增长并实现组织目标。</p>
+         </div>
+         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="bg-gray-50 p-4 rounded-lg">
+           <h4 class="font-medium text-gray-900 mb-3">展示对业务和品牌优先事项的深入了解</h4>
+           <div class="h-24">
+            <canvas id="knowledgeChart"></canvas>
+           </div>
+          
+          </div>
+          <div class="bg-gray-50 p-4 rounded-lg">
+           <h4 class="font-medium text-gray-900 mb-3">制定并执行与品牌战略一致的可操作战略计划</h4>
+           <div class="h-24">
+            <canvas id="strategicChart"></canvas>
+           </div>
+          
+          </div>
+          <div class="bg-gray-50 p-4 rounded-lg">
+           <h4 class="font-medium text-gray-900 mb-3">监控并调整策略</h4>
+           <div class="h-24">
+            <canvas id="monitorsChart"></canvas>
+           </div>
+           
+          </div>
+         </div>
+         <div class="bg-primary-08 p-4 rounded-lg">
+          <h5 class="font-medium text-primary mb-2">定性评价 :</h5>
+          <p class="text-sm text-gray-700">"许多 DM 对整体业务重点有清晰的理解，也能够准确传达战略方向，但将这些方向转化为基于洞察的具体行动时仍存在不一致性。尽管目标通常表达得较明确，但背后的逻辑——为何采取这些行动、如何与客户需求相连接、预期会带来怎样的业务效果——并未始终得到充分说明。由此在战略意图与日常执行之间形成了落差，使团队难以区分哪些行为真正能够推动结果。
+
+在寻找增长机会时，DM 往往沿用已有的工作方式，而不是基于客户差异、决策链变化或竞争动态来制定因地制宜的策略。资源投入有时过于分散，多个重点同时推进，却缺乏足够的聚焦力度，从而削弱了对高价值机会的前置投入，也使潜在风险或障碍未能被及时预判和处理。
+
+要进一步提升商业影响力，DM 需要建立更结构化、更具前瞻性的规划方式——对优先级背后的原因进行更清晰的说明，以更精准的客户洞察支撑决策，并设定可检验行动效果的明确里程碑。同时，更主动监测早期信号并及时调整策略，将有助于加快纠偏速度、强化资源聚焦，并确保日常决策与长期战略目标保持紧密一致。
+"
+</p>
+         </div>
+        </div>
+       </div>
+      </div><!-- Building Best Teams -->
+      <div class="border border-gray-200 rounded-lg">
+       <div class="competency-item p-4 flex justify-between items-center" onclick="toggleCompetency('teams')">
+        <div class="flex items-center space-x-3">
+         <div class="w-8 h-8 rounded-lg bg-primary-08 flex items-center justify-center">
+          <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m3 5.197V9a3 3 0 00-3-3M9 21v-4a2 2 0 012-2h2a2 2 0 012 2v4" />
+          </svg>
+         </div>
+         <div>
+          <h3 class="font-semibold text-gray-900">打造最佳团队</h3>
+          
+         </div>
+        </div>
+        <svg class="w-5 h-5 text-gray-400 transform transition-transform" id="teams-arrow" viewbox="0 0 24 24" fill="none"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+        </svg>
+       </div>
+       <div id="teams-content" class="sub-competency border-t border-gray-200">
+        <div class="p-4 space-y-4">
+         <div class="mb-4 p-4 bg-primary-08 rounded-lg">
+          <h4 class="font-medium text-primary mb-2">定义</h4>
+          <p class="text-sm text-gray-700">识别、招聘和发展顶尖人才，培养多元化和包容性文化，推动高绩效和协作。确保团队成员具备超越业务目标所需的技能、资源和动力。 </p>
+         </div>
+         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="bg-gray-50 p-4 rounded-lg">
+           <h4 class="font-medium text-gray-900 mb-3">评估并优化人才</h4>
+           <div class="h-24">
+            <canvas id="assessChart"></canvas>
+           </div>
+         
+          </div>
+          <div class="bg-gray-50 p-4 rounded-lg">
+           <h4 class="font-medium text-gray-900 mb-3">吸引并留住人才</h4>
+           <div class="h-24">
+            <canvas id="attractChart"></canvas>
+           </div>
+         
+          </div>
+          <div class="bg-gray-50 p-4 rounded-lg">
+           <h4 class="font-medium text-gray-900 mb-3">促进团队参与和协作</h4>
+           <div class="h-24">
+            <canvas id="engagementChart"></canvas>
+           </div>
+           
+          </div>
+         </div>
+         <div class="bg-primary-08 p-4 rounded-lg">
+          <h5 class="font-medium text-primary mb-2">定性评价 :</h5>
+          <p class="text-sm text-gray-700">"许多 DM 展现出维护团队和谐、保障日常工作顺畅开展的强烈意愿，但他们对团队能力的判断往往侧重于当下可见的行为与活动，而不是系统识别更深层的技能基础。由于评估更多停留在表层信号，一些关键能力差异——例如学术沟通深度、规划严谨性或处理复杂场景的自信度——未能被及时识别与强化。这使得职责分配难以更精准地服务于团队能力的长期建设。
+
+在人才培养方面，DM 对不同成员的辅导方式相对一致，较少根据个人潜力、成熟度或能力缺口进行差异化支持。表现突出的成员未必获得足够的挑战空间，而需要更多帮助的成员也未必得到足够早、足够集中的干预。在压力场景下，调整角色、强化期望或主动介入的时机有时被忽略，从而影响团队能力的持续提升。
+
+虽然 DMs 普遍营造了较为积极、合作的团队氛围，但协作的深度与广度仍不够稳定。团队讨论更多围绕任务更新，而较少进行结构化的共同解决问题，导致成员之间缺乏分享经验、挑战观点和共创方案的机会。一些更安静或谨慎的成员也不常被主动邀请发声，团队内部的知识共享机制尚未完全形成。通过鼓励更广泛的参与、建立更有结构的协作方式，并强化团队共同承担结果的意识，DM 能够推动团队迈向更具韧性与持续高绩效的文化。"
+ </p>
+         </div>
+        </div>
+       </div>
+      </div>
+     </div>
+    </div>
+   </div><!-- Development Priorities Tab -->
+   <div id="development" class="tab-content">
+    <div class="bg-white rounded-lg shadow-sm p-6">
+     <h2 class="text-xl font-semibold text-gray-900 mb-6">Development Priorities &amp; Action Plan</h2>
+     <div class="space-y-6"><!-- Priority 1 -->
+      <div class="border-l-4 pl-6" style="border-color: var(--primary);">
+       <div class="flex items-center space-x-3 mb-2">
+        <div class="w-8 h-8 rounded-lg bg-primary-08 flex items-center justify-center">
+         <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+         </svg>
+        </div>
+        <h3 class="text-lg font-semibold text-primary">🎯 Priority 1: 绩效辅导</h3>
+       </div>
+       <p class="text-gray-600 mb-4">Develop structured feedback delivery and performance conversation skills</p>
+       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="bg-primary-08 p-4 rounded-lg">
+         <h4 class="font-medium text-primary mb-2">Recommended Actions</h4>
+         <ul class="text-sm text-gray-700 space-y-1">
+          <li>• Attend conversation skills workshop</li>
+          <li>• Practice STAR feedback method</li>
+          <li>• Schedule monthly coaching sessions</li>
+          <li>• Shadow senior manager during reviews</li>
+         </ul>
+        </div>
+        <div class="bg-primary-08 p-4 rounded-lg">
+         <h4 class="font-medium text-primary mb-2">Success Metrics</h4>
+         <ul class="text-sm text-gray-700 space-y-1">
+          <li>• Increase score from 1.8 to 2.2</li>
+          <li>• Improved 360 feedback</li>
+          <li>• Team engagement +15%</li>
+          <li>• Quarterly review completion 100%</li>
+         </ul>
+        </div>
+       </div>
+      </div><!-- Priority 2 -->
+      <div class="border-l-4 pl-6" style="border-color: var(--primary);">
+       <div class="flex items-center space-x-3 mb-2">
+        <div class="w-8 h-8 rounded-lg bg-primary-08 flex items-center justify-center">
+         <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m3 5.197V9a3 3 0 00-3-3M9 21v-4a2 2 0 012-2h2a2 2 0 012 2v4" />
+         </svg>
+        </div>
+        <h3 class="text-lg font-semibold text-primary">🎯 Priority 2: Team Dynamics &amp; Conflict Resolution</h3>
+       </div>
+       <p class="text-gray-600 mb-4">Improve conflict management and collaborative dynamics</p>
+       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="bg-primary-08 p-4 rounded-lg">
+         <h4 class="font-medium text-primary mb-2">Recommended Actions</h4>
+         <ul class="text-sm text-gray-700 space-y-1">
+          <li>• Enroll in conflict resolution training</li>
+          <li>• Run team-building activities</li>
+          <li>• Use profiles to understand styles</li>
+          <li>• Establish team charter and norms</li>
+         </ul>
+        </div>
+        <div class="bg-primary-08 p-4 rounded-lg">
+         <h4 class="font-medium text-primary mb-2">Success Metrics</h4>
+         <ul class="text-sm text-gray-700 space-y-1">
+          <li>• Dynamics score 1.6 → 2.0</li>
+          <li>• 50% fewer escalations</li>
+          <li>• Collaboration rating +20%</li>
+          <li>• Cross-functional project success</li>
+         </ul>
+        </div>
+       </div>
+      </div><!-- Priority 3 -->
+      <div class="border-l-4 pl-6" style="border-color: var(--primary);">
+       <div class="flex items-center space-x-3 mb-2">
+        <div class="w-8 h-8 rounded-lg bg-primary-08 flex items-center justify-center">
+         <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+         </svg>
+        </div>
+        <h3 class="text-lg font-semibold text-primary">🎯 Priority 3: Change Management &amp; Communication</h3>
+       </div>
+       <p class="text-gray-600 mb-4">Strengthen change leadership and stakeholder communication</p>
+       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="bg-primary-08 p-4 rounded-lg">
+         <h4 class="font-medium text-primary mb-2">Recommended Actions</h4>
+         <ul class="text-sm text-gray-700 space-y-1">
+          <li>• Complete change management training</li>
+          <li>• Lead a transformation project</li>
+          <li>• Improve presentation storytelling</li>
+          <li>• Practice stakeholder mapping</li>
+         </ul>
+        </div>
+        <div class="bg-primary-08 p-4 rounded-lg">
+         <h4 class="font-medium text-primary mb-2">Success Metrics</h4>
+         <ul class="text-sm text-gray-700 space-y-1">
+          <li>• Successful change initiative</li>
+          <li>• Stakeholder satisfaction +25%</li>
+          <li>• Communication effectiveness 2.5</li>
+          <li>• Adoption rate &gt; 80%</li>
+         </ul>
+        </div>
+       </div>
+      </div>
+     </div><!-- Timeline -->
+     <div class="mt-8 bg-gray-50 p-6 rounded-lg">
+      <h3 class="text-lg font-semibold text-gray-900 mb-4">Development Timeline</h3>
+      <div class="space-y-4">
+       <div class="flex items-center space-x-4">
+        <div class="w-4 h-4 rounded-full" style="background-color: var(--primary);"></div>
+        <div class="flex-1">
+         <div class="font-medium text-gray-900">
+          Q1 2025: Coaching Skills Development
+         </div>
+         <div class="text-sm text-gray-600">
+          Focus on feedback delivery and performance conversations
+         </div>
+        </div>
+       </div>
+       <div class="flex items-center space-x-4">
+        <div class="w-4 h-4 rounded-full" style="background-color: var(--primary);"></div>
+        <div class="flex-1">
+         <div class="font-medium text-gray-900">
+          Q2 2025: Team Dynamics Improvement
+         </div>
+         <div class="text-sm text-gray-600">
+          Implement conflict resolution and team building initiatives
+         </div>
+        </div>
+       </div>
+       <div class="flex items-center space-x-4">
+        <div class="w-4 h-4 rounded-full" style="background-color: var(--primary);"></div>
+        <div class="flex-1">
+         <div class="font-medium text-gray-900">
+          Q3–Q4 2025: Change Leadership
+         </div>
+         <div class="text-sm text-gray-600">
+          Lead transformation project and enhance communication skills
+         </div>
+        </div>
+       </div>
+      </div>
+     </div>
+    </div>
+   </div>
+  </div>
+  <script>
+    // DM Data
+    const dmData = {
+      team: {
+        name: "Team Overview",
+        title: "团队能力概览",
+        description: "The ratings below show the team's collective performance based on simulation assessments and 360 feedback conducted against the Amgen China DM competency model. The team demonstrates strong 业务敏锐度 and leadership capabilities with opportunities for growth in coaching and team dynamics.",
+        feedbackTitle: "团队能力反馈汇总"
+      },
+      dm1: {
+        name: "Sarah Chen",
+        title: " 陈莎拉 - 能力概览", 
+        description: "本个性化发展报告基于陈经理本人完成的模拟评估和360度反馈，呈现其在地区经理能力模型中的表现。报告强调了陈经理在业务敏锐度和团队领导力方面的优势，同时指出在绩效辅导和打造最佳团队方面的进一步发展机会。",
+        feedbackTitle: ""
+      },
+      dm2: {
+        name: "Michael Rodriguez",
+        title: "Michael Rodriguez - Competency Overview",
+        description: "The ratings below are generated based on the simulation based assessment and 360 assessment conducted and analyzed against the Amgen China DM competency model. Michael demonstrates strong team building capabilities and solid business understanding with development needs in performance coaching.",
+        feedbackTitle: "Michael Rodriguez - Competency Feedback Summary"
+      },
+      dm3: {
+        name: "Jennifer Kim", 
+        title: "Jennifer Kim - Competency Overview",
+        description: "The ratings below are generated based on the simulation based assessment and 360 assessment conducted and analyzed against the Amgen China DM competency model. Jennifer excels in coaching and team development with opportunities to strengthen strategic business planning.",
+        feedbackTitle: "Jennifer Kim - Competency Feedback Summary"
+      },
+      dm4: {
+        name: "David Thompson",
+        title: "David Thompson - Competency Overview", 
+        description: "The ratings below are generated based on the simulation based assessment and 360 assessment conducted and analyzed against the Amgen China DM competency model. David shows strong analytical skills and ethical leadership with development opportunities in team dynamics and conflict resolution.",
+        feedbackTitle: "David Thompson - Competency Feedback Summary"
+      }
+    };
+
+    // Filter function
+    function filterByDM() {
+      const selectedDM = document.getElementById('dmFilter').value;
+      const data = dmData[selectedDM];
+      
+      // Update titles and descriptions
+      document.getElementById('overviewTitle').textContent = data.title;
+      document.getElementById('overviewDescription').textContent = data.description;
+      document.getElementById('feedbackTitle').textContent = data.feedbackTitle;
+      
+      // Update feedback content based on selection
+      updateFeedbackContent(selectedDM);
+      
+      // Update charts with individual data if not team view
+      if (selectedDM !== 'team') {
+        updateChartsForIndividual(selectedDM);
+        document.getElementById('reporttitle').textContent = 'RM 报告'
+        document.getElementById('legendone').textContent = '你的评分';
+
+      } else {
+        updateChartsForTeam();
+      }
+    }
+
+    function updateFeedbackContent(dmType) {
+      if(dmType == 'team')
+      {
+        window.location.reload();
+
+      }
+      const feedbackContent = document.getElementById('feedbackContent');
+      
+      if (dmType === 'team') {
+       const feedbackContent = document.getElementById('feedbackContent');
+        return;
+      }
+      
+      // Individual feedback content
+      const individualFeedback = getIndividualFeedback(dmType);
+      feedbackContent.innerHTML = individualFeedback;
+    }
+
+    function getIndividualFeedback(dmType) {
+      const feedbacks = {
+        dm1: `
+          <div class="border-l-4 pl-4" style="border-color: var(--primary);">
+            <h3 class="font-semibold text-primary mb-2">团队领导力</h3>
+            <p class="text-sm text-gray-700 mb-2">
+              <strong>优势 :</strong> 陈经理在愿景设定与团队鼓舞方面表现突出，他将第四季度“客户至上”倡议有效转化为区域内的清晰目标及行动计划，成功通过他人交付成果并推动区域高绩效。在区域重组期间，他展现出压力下的决策力，能在48小时内完成区域重新分配，体现了优秀的判断力与团队凝聚能力。他始终以道德与诚信为准则，建立了稳定可靠的团队信任关系，并持续树立卓越榜样，确保责任落实。
+            </p>
+            <p class="text-sm text-gray-700">
+              <strong>发展领域 :</strong> 尽管陈经理的领导力强，但在跨部门协作方面仍有提升空间。在推进联合项目时，他偶尔会遇到市场部与运营部支持不一致的情况。他可进一步采用更具协作性的影响方式，与其他区域领导建立更一致的领导实践，以提升整体协作效率。
+            </p>
+          </div>
+          <div class="border-l-4 pl-4" style="border-color: var(--primary);">
+            <h3 class="font-semibold text-primary mb-2">绩效辅导</h3>
+            <p class="text-sm text-gray-700 mb-2">
+              <strong>优势 :</strong>  陈经理制定了系统的绩效辅导计划，并在发展与反馈方面执行到位。他优先考虑并执行辅导，通过结构化的90天计划推动绩效欠佳的销售代表取得可衡量进步，缔结率得到明显提升。在客户拜访中，他有效示范最佳实践，并通过持续的绩效提升沟通保持高标准。他同时培养持续学习和成长的氛围，推动团队不断进步。
+            </p>
+            <p class="text-sm text-gray-700">
+              <strong>发展领域 :</strong>  陈经理在处理较具挑战性的绩效提升沟通方面偶尔会有所延迟，使某些出勤与绩效问题长期未能有效解决。他的辅导标准化水平不一，辅导记录与具体可执行的改进建议的跟进力度可进一步加强，以确保团队成员获得一致的发展体验。
+            </p>
+          </div>
+          <div class="border-l-4 pl-4" style="border-color: var(--primary);">
+            <h3 class="font-semibold text-primary mb-2">业务敏锐度</h3>
+            <p class="text-sm text-gray-700 mb-2">
+              <strong>优势 :</strong>陈经理展现出战略思维与市场理解能力，能主动识别市场趋势并据此制定并执行与品牌战略一致的可操作战略计划。他的数据分析能力强，能够在季度业务回顾中提供深入见解，并通过监控并调整策略提升区域绩效。他对利润结构与市场机会的判断准确，推动区域平均缔结率与交易价值提升。
+            </p>
+            <p class="text-sm text-gray-700">
+              <strong>发展领域 :</strong>他在向高层进行业务呈报时，可进一步提升战略叙述的连贯性，而不仅仅聚焦于数据本身。此外，他可更积极参与公司层面的战略规划，在跨团队场景中分享见解，以更有效影响组织方向并促进风险管理与整体业务成果。
+            </p>
+          </div>
+          <div class="border-l-4 pl-4" style="border-color: var(--primary);">
+            <h3 class="font-semibold text-primary mb-2">打造最佳团队</h3>
+            <p class="text-sm text-gray-700 mb-2">
+              <strong>优势 :</strong>陈经理成功为新加入团队的成员提供结构化发展计划，提升了人才发展与协作的效率，使团队留存率高且上岗周期短。他善于识别并优化人才，推动内部晋升，并通过团队建设活动提升区域士气。他能吸引并保留人才，并有效促进团队参与和协作，提升整体团队表现。
+            </p>
+            <p class="text-sm text-gray-700">
+              <strong>发展领域 :</strong>在冲突管理方面，他的处理方式有时不够一致，导致部分人际问题出现不必要的升级。他可进一步优化目标设定方式，引导团队形成更一致的文化。部分新成员反映跨团队联系感不足，这为陈经理在推动跨区域协作方面提供了发展机会。
+          </div>
+          `,
+        dm2: `
+          <div class="border-l-4 pl-4" style="border-color: var(--primary);">
+            <h3 class="font-semibold text-primary mb-2">团队领导力</h3>
+            <p class="text-sm text-gray-700 mb-2">
+              <strong>优势 :</strong> Michael demonstrates strong decision-making capabilities and maintains high ethical standards. He effectively manages team performance and has built strong trust with his sales representatives through consistent communication and follow-through on commitments.
+            </p>
+            <p class="text-sm text-gray-700">
+              <strong>发展领域 :</strong> Michael's leadership style can be overly directive at times. He would benefit from developing more adaptive leadership approaches that engage different personality types and experience levels within his team.
+            </p>
+          </div>
+          <div class="border-l-4 pl-4" style="border-color: var(--primary);">
+            <h3 class="font-semibold text-primary mb-2">打造最佳团队</h3>
+            <p class="text-sm text-gray-700 mb-2">
+              <strong>优势 :</strong> Michael excels at talent identification and has successfully onboarded two new hires with structured development plans. His recognition programs have significantly boosted team morale and engagement scores.
+            </p>
+            <p class="text-sm text-gray-700">
+              <strong>发展领域 :</strong> Michael needs to improve his conflict resolution skills. Recent team tensions were allowed to escalate unnecessarily, impacting overall team dynamics and collaboration.
+            </p>
+          </div>`,
+        dm3: `
+          <div class="border-l-4 pl-4" style="border-color: var(--primary);">
+            <h3 class="font-semibold text-primary mb-2">绩效辅导</h3>
+            <p class="text-sm text-gray-700 mb-2">
+              <strong>优势 :</strong> Jennifer is exceptional at providing structured, actionable feedback and has implemented a consistent coaching framework across her team. Her coaching sessions follow the GROW model effectively, and she maintains excellent follow-through on development commitments.
+            </p>
+            <p class="text-sm text-gray-700">
+              <strong>发展领域 :</strong> While Jennifer's coaching skills are strong, she could benefit from being more decisive in performance management situations that require immediate action.
+            </p>
+          </div>
+          <div class="border-l-4 pl-4" style="border-color: var(--primary);">
+            <h3 class="font-semibold text-primary mb-2">业务敏锐度</h3>
+            <p class="text-sm text-gray-700 mb-2">
+              <strong>优势 :</strong> Jennifer has solid understanding of business 学习者s and effectively translates company objectives into team goals. Her quarterly reviews are well-prepared and data-driven.
+            </p>
+            <p class="text-sm text-gray-700">
+              <strong>发展领域 :</strong> Jennifer would benefit from developing stronger strategic planning skills and improving her ability to identify and capitalize on market opportunities for territory growth.
+            </p>
+          </div>`,
+        dm4: `
+          <div class="border-l-4 pl-4" style="border-color: var(--primary);">
+            <h3 class="font-semibold text-primary mb-2">业务敏锐度</h3>
+            <p class="text-sm text-gray-700 mb-2">
+              <strong>优势 :</strong> David demonstrates exceptional analytical skills and has identified key market trends that led to strategic pivots resulting in 135% target achievement. His understanding of profit margins and deal structures has improved average deal values significantly.
+            </p>
+            <p class="text-sm text-gray-700">
+              <strong>发展领域 :</strong> While David's analysis is thorough, he could improve his ability to communicate complex business insights to cross-functional teams in a more accessible and engaging manner.
+            </p>
+          </div>
+          <div class="border-l-4 pl-4" style="border-color: var(--primary);">
+            <h3 class="font-semibold text-primary mb-2">打造最佳团队</h3>
+            <p class="text-sm text-gray-700 mb-2">
+              <strong>优势 :</strong> David is skilled at matching individual strengths to opportunities and has successfully advocated for team member promotions. He maintains high performance standards and provides clear expectations.
+            </p>
+            <p class="text-sm text-gray-700">
+              <strong>发展领域 :</strong> David needs to improve his conflict resolution and team building skills. His team would benefit from more collaborative goal-setting and regular team-building activities to improve cohesion.
+            </p>
+          </div>`
+      };
+      
+      return feedbacks[dmType] || '';
+    }
+
+    function updateChartsForIndividual(dmType) {
+      // Individual chart data would go here
+      // For now, keeping existing charts
+    }
+
+    function updateChartsForTeam() {
+      // Team chart data
+      // Reinitialize with team data
+      initOverallChart();
+      initOverviewCharts();
+    }
+
+    // Tabs
+    function showTab(tabName, buttonEl) {
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      document.getElementById(tabName).classList.add('active');
+
+      // Reset styles for all buttons, then apply purple to the active one
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.style.borderColor = 'transparent';
+        btn.style.color = '#6b7280'; // gray-500
+      });
+      if (buttonEl) {
+        buttonEl.style.borderColor = 'var(--primary)';
+        buttonEl.style.color = 'var(--primary)';
+      }
+
+      if (tabName === 'detailed') {
+        setTimeout(initDetailedCharts, 100);
+      } else if (tabName === 'overall') {
+        setTimeout(() => { initOverallChart(); initOverviewCharts(); }, 100);
+      }
+    }
+
+    // Competency accordion
+    function toggleCompetency(competencyId) {
+      const content = document.getElementById(competencyId + '-content');
+      const arrow = document.getElementById(competencyId + '-arrow');
+      const item = content.parentElement.querySelector('.competency-item');
+
+      const isOpen = content.classList.contains('show');
+      document.querySelectorAll('.sub-competency').forEach(el => {
+        el.classList.remove('show');
+        el.parentElement.querySelector('.competency-item')?.classList.remove('competency-expanded');
+      });
+      document.querySelectorAll('[id$="-arrow"]').forEach(el => { el.style.transform = 'rotate(0deg)'; });
+
+      if (!isOpen) {
+        content.classList.add('show');
+        arrow.style.transform = 'rotate(180deg)';
+        item.classList.add('competency-expanded');
+        setTimeout(() => initCompetencyCharts(competencyId), 100);
+      }
+    }
+
+    // Charts - purple only
+function purpleBarConfig(values) {
+  return {
+    type: 'bar',
+    data: {
+      labels: ['自评', '上级', '下属', '模拟'],
+      datasets: [{
+        data: values,
+        backgroundColor: [
+          '#b3d1ff',
+          '#11a5f5',
+          '#66caff',
+          '#0063c3'
+        ],
+        borderColor: 'transparent',
+        borderWidth: 1,
+        borderRadius: 4,
+        borderSkipped: false
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        x: {
+          beginAtZero: true,
+          min: 0,
+          max: 3,
+          ticks: { stepSize: 1, font: { size: 10 } },
+          grid: { color: 'rgba(0,0,0,0.05)', lineWidth: 1 }
+        },
+        y: {
+          grid: { display: false },
+          ticks: { font: { size: 10 } }
+        }
+      },
+      plugins: {
+        legend: { display: false },
+        datalabels: {
+          anchor: 'end',
+          align: 'right',
+          color: '#6b7280',
+          font: { size: 10, weight: 'bold' },
+          formatter: (value) => value.toFixed(1)
+        }
+      },
+      elements: { bar: { borderRadius: 4, borderSkipped: false } },
+      categoryPercentage: 0.8,
+      barPercentage: 0.7
+    },
+    plugins: [ChartDataLabels] // 👈 Important: register plugin here
+  };
+}
+
+
+
+
+
+
+    function initOverallChart() {
+      const ctx = document.getElementById('overallChart');
+      if (!ctx) return;
+      new Chart(ctx, {
+        type: 'radar',
+        data: {
+          labels: ['Team Leadership', 'Team Coaching', 'Business Acumen', 'Building Best Teams'],
+          datasets: [{
+            label: 'Current Score',
+            data: [2.1, 1.8, 2.3, 1.9],
+            borderColor: '#EC7200',
+            backgroundColor: 'rgba(236,114,0,0.15)',
+            pointBackgroundColor: '#EC7200',
+            pointBorderColor: '#fff'
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            r: {
+              beginAtZero: true,
+              max: 3,
+              angleLines: { color: 'rgba(0,0,0,0.06)' },
+              grid: { color: 'rgba(0,0,0,0.06)' },
+              ticks: { stepSize: 1 }
+            }
+          },
+          plugins: { legend: { display: false } }
+        }
+      });
+    }
+
+    function initCompetencyCharts(competencyId) {
+      const maps = {
+        'team-leadership': [
+          { id: 'cultureChart', vals: [1.6, 1.5, 1.4, 1.4] },
+          { id: 'resultsChart', vals:[1.85, 1.19, 1.63, 1.0] },
+          { id: 'adaptChart', vals: [1.93, 1.73, 1.56, 1.6] },
+          { id: 'ethicsChart', vals: [1.61, 1.7, 1.61, 1.35] }
+        ],
+        'coaching': [
+          { id: 'prioritizeChart', vals: [1.5, 1.2, 1.06, 1.06] },
+          { id: 'learningChart', vals: [1.6, 2.01, 1.8, 1.4] },
+          { id: 'excellenceChart', vals: [1.6, 1.44, 1.2, 1.23] }
+        ],
+        'business': [
+          { id: 'knowledgeChart', vals: [2.3, 2.1, 1.8, 1.85] },
+          { id: 'strategicChart', vals: [2.1, 1.8, 1.7, 1.27] },
+          { id: 'monitorsChart', vals: [2.2, 2.1, 1.67, 1.2] }
+        ],
+        'teams': [
+          { id: 'assessChart', vals: [1.3, 1.7, 1.3, 1.06] },
+          { id: 'attractChart', vals: [1.3, 1.5, 1.4, 1.32]},
+          { id: 'engagementChart', vals: [1.8, 1.7, 1.4, 1.51] }
+        ]
+      };
+
+      (maps[competencyId] || []).forEach(item => {
+        const el = document.getElementById(item.id);
+        if (el) new Chart(el, purpleBarConfig(item.vals));
+      });
+    }
+
+    function initDetailedCharts() {
+      // Charts are initialized on expand, handled in toggleCompetency
+    }
+
+    // Overview mini charts
+    function initOverviewCharts() {
+      const configs = [
+        { id: 'teamLeadershipOverviewChart', vals: [1.8, 2.06, 1.72, 1.35] },
+        { id: 'coachingOverviewChart',       vals: [1.3, 1.1, 1.5, 1.3] },
+        { id: 'businessOverviewChart',       vals: [2.2, 2.06, 1.8, 1.45] },
+        { id: 'teamsOverviewChart',          vals: [1.5, 1.74, 1.4, 1.3] }
+      ];
+      configs.forEach(c => {
+        const el = document.getElementById(c.id);
+        if (el) new Chart(el, purpleBarConfig(c.vals));
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initOverallChart();
+      initOverviewCharts();
+    });
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9a18744dc7c68993',t:'MTc2MzY0NzAyNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
